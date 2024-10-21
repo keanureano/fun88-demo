@@ -42,6 +42,13 @@ jobs:
         with:
           static_site_generator: next
 
+      - name: Set Environment Variables
+        env:
+          BASE_PATH: /fun88-demo
+        run: |
+          echo "" > .env.local
+          echo BASE_PATH=$BASE_PATH >> .env.local
+
       - name: Build Next.js
         run: pnpm build
 
