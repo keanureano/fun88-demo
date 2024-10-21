@@ -31,7 +31,7 @@ export default function Games() {
   return (
     <div>
       {games.map((game) => (
-        <div>{game.name}</div>
+        <div key={game.id}>{game.name}</div>
       ))}
     </div>
   );
