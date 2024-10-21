@@ -23,7 +23,7 @@ export default function Banner() {
       <CarouselContent>
         <CarouselItem>
           <Image
-            src="/heroImage.png"
+            src="./heroImage.png"
             alt="hero image"
             width={720}
             height={360}
@@ -31,7 +31,7 @@ export default function Banner() {
         </CarouselItem>
         <CarouselItem>
           <Image
-            src="/heroImage.png"
+            src="./heroImage.png"
             alt="hero image"
             width={720}
             height={360}
@@ -40,7 +40,7 @@ export default function Banner() {
         </CarouselItem>
         <CarouselItem>
           <Image
-            src="/heroImage.png"
+            src="./heroImage.png"
             alt="hero image"
             width={720}
             height={360}
