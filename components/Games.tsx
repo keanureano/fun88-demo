@@ -4,7 +4,9 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { Input } from "./ui/input";
 import Image from "next/image";
-import { Button } from "./ui/button";
+import { Star } from "lucide-react";
+import clsx from "clsx";
+import { toast } from "@/hooks/use-toast";
 
 interface Game {
   id: number;
@@ -30,15 +32,23 @@ const mockCategories: Category[] = [
   },
   {
     id: 3,
-    name: "live",
+    name: "new",
   },
   {
     id: 4,
-    name: "jackpots",
+    name: "slots",
   },
   {
     id: 5,
-    name: "new",
+    name: "live",
+  },
+  {
+    id: 6,
+    name: "jackpots",
+  },
+  {
+    id: 7,
+    name: "favorites",
   },
 ];
 
@@ -130,17 +140,16 @@ const mockGames: Game[] = [
 ];
 
 export default function Games() {
+  const [games, setGames] = useState<Game[]>(mockGames);
   const [filteredGames, setFilteredGames] = useState<Game[]>([]);
   const [activeCategory, setActiveCategory] = useState("start");
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchFilteredGames = async () => {
-    setFilteredGames([]);
-
     const response = await new Promise<Game[]>((resolve) => {
       setTimeout(() => {
-        resolve(mockGames);
-      }, 1000);
+        resolve(games);
+      }, 500);
     });
 
     if (activeCategory === "search") {
@@ -162,7 +171,7 @@ export default function Games() {
 
   useEffect(() => {
     fetchFilteredGames();
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, games]);
 
   return (
     <Tabs defaultValue="start" onValueChange={setActiveCategory}>
@@ -171,6 +180,8 @@ export default function Games() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         filteredGames={filteredGames}
+        games={games}
+        setGames={setGames}
       />
     </Tabs>
   );
@@ -178,7 +189,7 @@ export default function Games() {
 
 function GamesCategories() {
   return (
-    <TabsList className="w-full gap-10">
+    <TabsList className="w-full">
       {mockCategories.map((category) => (
         <TabsTrigger key={category.id} value={category.name}>
           {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
@@ -192,10 +203,14 @@ function GamesContent({
   searchQuery,
   setSearchQuery,
   filteredGames,
+  games,
+  setGames,
 }: {
   searchQuery: string;
   setSearchQuery: Dispatch<SetStateAction<string>>;
   filteredGames: Game[];
+  games: Game[];
+  setGames: Dispatch<SetStateAction<Game[]>>;
 }) {
   return (
     <>
@@ -209,20 +224,54 @@ function GamesContent({
               className="my-2"
             />
           )}
-          <GamesList filteredGames={filteredGames} />
+          <GamesList
+            filteredGames={filteredGames}
+            games={games}
+            setGames={setGames}
+          />
         </TabsContent>
       ))}
     </>
   );
 }
 
-function GamesList({ filteredGames }: { filteredGames: Game[] }) {
+function GamesList({
+  filteredGames,
+  games,
+  setGames,
+}: {
+  filteredGames: Game[];
+  games: Game[];
+  setGames: Dispatch<SetStateAction<Game[]>>;
+}) {
+  const handleFavoriteClick = (currentGame: Game) => {
+    setGames(
+      games.map((game) => {
+        if (currentGame.id === game.id) {
+          const isFavorited = game.categories.includes("favorites");
+          toast({
+            variant: isFavorited ? "destructive" : "primary",
+            title: `${isFavorited ? "Removed" : "Added"} ${currentGame.name} ${
+              isFavorited ? "from" : "to"
+            } favorites`,
+          });
+          return {
+            ...game,
+            categories: isFavorited
+              ? game.categories.filter((category) => category !== "favorites")
+              : [...game.categories, "favorites"],
+          };
+        }
+        return game;
+      })
+    );
+  };
+
   return (
     <div className="grid grid-cols-3 gap-2">
       {filteredGames.map((game) => (
-        <Button
-          variant="ghost"
-          className="w-full h-full p-0 m-0 transition hover:brightness-110 overflow-hidden rounded-3xl"
+        <div
+          className="relative w-full h-full p-0 m-0 overflow-hidden transition cursor-pointer hover:brightness-110 rounded-3xl"
           key={game.id}
         >
           <Image
@@ -230,9 +279,21 @@ function GamesList({ filteredGames }: { filteredGames: Game[] }) {
             alt={game.name}
             width={200}
             height={200}
-            className="object-cover w-full h-full hover:scale-105 transition"
+            className="object-cover w-full h-full"
           />
-        </Button>
+          <Star
+            className={clsx(
+              "absolute top-[1.5%] right-[2.5%] size-[16%] hover:scale-110 transition",
+              {
+                "fill-yellow-400 stroke-yellow-400":
+                  game.categories.includes("favorites"),
+                "fill-neutral-500 stroke-neutral-50":
+                  !game.categories.includes("favorites"),
+              }
+            )}
+            onClick={() => handleFavoriteClick(game)}
+          />
+        </div>
       ))}
     </div>
   );
