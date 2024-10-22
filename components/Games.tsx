@@ -4,7 +4,15 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { Input } from "./ui/input";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import {
+  CircleDollarSign,
+  Flame,
+  Gamepad2,
+  Joystick,
+  Search,
+  Star,
+  VenetianMask,
+} from "lucide-react";
 import clsx from "clsx";
 import { toast } from "@/hooks/use-toast";
 
@@ -19,36 +27,44 @@ interface Game {
 interface Category {
   id: number;
   name: string;
+  icon: React.ReactNode;
 }
 
 const mockCategories: Category[] = [
   {
     id: 1,
     name: "search",
+    icon: <Search />,
   },
   {
     id: 2,
     name: "start",
+    icon: <Flame />,
   },
   {
     id: 3,
     name: "new",
+    icon: <Gamepad2 />,
   },
   {
     id: 4,
     name: "slots",
+    icon: <Joystick />,
   },
   {
     id: 5,
     name: "live",
+    icon: <VenetianMask />,
   },
   {
     id: 6,
     name: "jackpots",
+    icon: <CircleDollarSign />,
   },
   {
     id: 7,
     name: "favorites",
+    icon: <Star />,
   },
 ];
 
@@ -189,10 +205,17 @@ export default function Games() {
 
 function GamesCategories() {
   return (
-    <TabsList className="w-full">
+    <TabsList className="flex w-full h-full justify-evenly">
       {mockCategories.map((category) => (
-        <TabsTrigger key={category.id} value={category.name}>
-          {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
+        <TabsTrigger
+          key={category.id}
+          value={category.name}
+          className="flex flex-col flex-1 px-0"
+        >
+          {category.icon}
+          <span className="text-xs">
+            {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
+          </span>
         </TabsTrigger>
       ))}
     </TabsList>
