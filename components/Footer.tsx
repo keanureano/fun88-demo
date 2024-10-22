@@ -11,7 +11,7 @@ const footerButtons = [
 
 export default function Footer() {
   return (
-    <footer className="p-1 fixed bottom-0 left-0 flex justify-evenly w-full bg-background text-sm">
+    <footer className="max-w-xl p-1 fixed bottom-0 left-1/2 transform -translate-x-1/2 flex justify-evenly w-full bg-background text-sm">
       {footerButtons.map(({ icon, label }, index) => (
         <Button
           key={index}
